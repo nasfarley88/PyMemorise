@@ -62,7 +62,7 @@ for i in range(0,max_length):
 	# Stop the loop if either end of string is reached.
 	# Note to self, this works because it's before any evalutaions,
 	# so it doesn't try to use any invalid indicies.
-	if i==len(test_string) or i==len(compare_string):
+	if i_test_string>=len(test_string) or i_compare_string>=len(compare_string):
 		break
 
 	# DEBUG
@@ -76,7 +76,6 @@ for i in range(0,max_length):
 		compare_string_watchman[i_compare_string] = 1
 		
 		# prepare the number for the next iteration.
-		i_test_string = i_test_string + 1
 		i_compare_string = i_compare_string + 1
 
 	else:
@@ -92,32 +91,50 @@ for i in range(0,max_length):
 		
 		# This range is the maximum range we could need.
 		for j in range(j_start,max_length):
+			# check if things are going to break at THE START OF THE looop.
+			print('TOTALLY TRYING TO COMPARE', j_compare_string+2, 'AND', len(compare_string))
+			if (j_compare_string+2)>len(compare_string):
+				print('not found')
+				break
+
 			a = b = c = 0
 
 			# DEBUG
 			print()
 			print('in the loop...')
-			print(j_test_string)
-			print(j_compare_string)
-			print(re.match(re.compile(compare_string[j_compare_string]), test_string[j_test_string]))
-			print(re.match(re.compile(compare_string[j_compare_string+1]), test_string[j_test_string+1]))
-			print(re.match(re.compile(compare_string[j_compare_string+2]), test_string[j_test_string+2]))
+			print('j_test_string:',j_test_string)
+			print('j_compare_string:', j_compare_string)
+			print('Try to match', compare_string[j_compare_string], 'and', test_string[j_test_string])
+			print('Try to match', compare_string[j_compare_string+1], 'and', test_string[j_test_string+1])
+			print(j_compare_string+2, '>', len(compare_string), 'or', j_test_string+2, '>', len(test_string))
+			print('Try to match', compare_string[j_compare_string+2], 'and', test_string[j_test_string+2])
+			#print(re.match(re.compile(compare_string[j_compare_string]), test_string[j_test_string]))
+			#print(re.match(re.compile(compare_string[j_compare_string+1]), test_string[j_test_string+1]))
+			#print(re.match(re.compile(compare_string[j_compare_string+2]), test_string[j_test_string+2]))
 			print()
 
 			# To improve readability, I'll put these here instead of in the if.
-			a = re.match(re.compile(compare_string[j_compare_string]), test_string[j_test_string])
-			b = re.match(re.compile(compare_string[j_compare_string+1]), test_string[j_test_string+1])
-			c = re.match(re.compile(compare_string[j_compare_string+2]), test_string[j_test_string+2])
+			a = bool(re.match(re.compile(compare_string[j_compare_string]), test_string[j_test_string]))
+			b = bool(re.match(re.compile(compare_string[j_compare_string+1]), test_string[j_test_string+1]))
+			c = bool(re.match(re.compile(compare_string[j_compare_string+2]), test_string[j_test_string+2]))
+			print('The result of comparisons...', a, b, c)
 
 			if a and b and c:
 				print('SUCCESSSSSS')
+				
+				# Still not working...something about the string going too far. Need to trace all the iteration ints.
+				test_string_watchman[j_test_string] = 1
+				compare_string_watchman[j_compare_string] = 1
 				break
 
 			#j_test_string = j_test_string + 1 # of course I don't want to loop this.
 			j_compare_string = j_compare_string + 1
-			if (j_test_string+2)>len(test_string)-1 or (j_compare_string+2)>len(compare_string)-1:
-				print('not found')
-				break
+
+	# the compare doesn't do much, because I've iterated over compare_string enough
+	i_test_string = i_test_string + 1
+
+	# test if we're at the end of either string 
+	print('Successful iteration----------------------------------')
 
 print('i_test_string =', i_test_string)
 print('i_compare_string =', i_compare_string)
