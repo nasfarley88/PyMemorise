@@ -38,9 +38,7 @@ test_string = re.findall('([\w\s\'-]+)[\W\s\'-]+', test_string)
 print(test_string)
 
 print('\n\n###Time for comparison###\n\n')
-###########################################################################################################
-#after this, it should be used ater like
-###########################################################################################################
+
 #compare_string = input("Please input string for comparison: ")
 file_compare = open('temp_compare.pym', 'r')
 compare_string = file_compare.read()
@@ -55,11 +53,27 @@ min_length = min(len(test_string),len(compare_string))
 for i in range(0,min_length):
 	# Compare the compare_string to see if it matches the test_string
 	if re.match(re.compile(test_string[i]), compare_string[i]):
-		print('Match')
+		#print('Match')
+		print(test_string[i])
 	else:
-		print('No Match')
+		#print('No Match')
+		temp_test_word = re.findall('\w+[\'-]?\w+',test_string[i])
+		#print(temp_test_word)
+		temp_compare_word = re.findall('\w+[\'-]?\w+',compare_string[i])
+		#print(temp_compare_word)
+		temp_min_length = min(len(temp_test_word),len(temp_compare_word))
+
+		for j in range(0,temp_min_length):
+			if re.match(re.compile(temp_test_word[j]), temp_compare_word[j]):
+				#print('\tMatch word')
+				print(temp_test_word[j])
+			else:
+				#print('\tNot Match word')
+				print("**" + temp_test_word[j] + "**")
 
 
+# Next, to get each phrase to check it's word content. But only if it's a 
+# Not Match
 
 
 
