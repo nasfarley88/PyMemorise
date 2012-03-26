@@ -1,1 +1,9 @@
-Just changin' for git learnin'
+Current version matches and corrects words and simple mistakes for phrases!
+
+Future versions
+ - Need to reinstate punctuation when reconstructing the phrase
+ - Possibly find a better way to output the phrase in the terminal
+   = Maybe restrict it to 80 char and put markers on every line indicating 
+     if there is an error present.
+ - More robust error checking, checking in other places for the same phrase
+   etc.
