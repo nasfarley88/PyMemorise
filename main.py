@@ -47,6 +47,23 @@ compare_string = file_compare.read()
 
 compare_string = re.findall('([\w\s\'-]+)[\W\s\'-]+', compare_string)
 print(compare_string)
+
+test_string_watchman = [0] * len(test_string)
+compare_string_watchman = [0] * len(compare_string)
+min_length = min(len(test_string),len(compare_string))
+
+for i in range(0,min_length):
+	# Compare the compare_string to see if it matches the test_string
+	if re.match(re.compile(test_string[i]), compare_string[i]):
+		print('Match')
+	else:
+		print('No Match')
+
+
+
+
+
+
 # This comparison includes punctuation, I'll handle that separately.
 #compare_string = re.findall('\w+|[!?",\'.\(\)]', compare_string)
 
