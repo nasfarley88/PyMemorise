@@ -18,6 +18,7 @@ file = open('temp.pym', 'r')
 
 #file_string = file.read()
 test_string = file.read()
+test_string_punc = test_string # this will be formatted later
 #print(file_string)
 print(test_string)
 
@@ -37,6 +38,10 @@ test_string = re.findall('([\w\s\'-]+)[\W\s\'-]+', test_string)
 #test_string = re.findall('^.*;', test_string)
 print(test_string)
 
+# I need to extract the punctuation
+test_string_punc = re.findall('[.,;:]', test_string_punc)
+print(test_string_punc)
+
 print('\n\n###Time for comparison###\n\n')
 
 #compare_string = input("Please input string for comparison: ")
@@ -45,16 +50,21 @@ compare_string = file_compare.read()
 
 compare_string = re.findall('([\w\s\'-]+)[\W\s\'-]+', compare_string)
 print(compare_string)
+print()
 
+
+# Time to show the user what's happened to their string
 test_string_watchman = [0] * len(test_string)
 compare_string_watchman = [0] * len(compare_string)
 min_length = min(len(test_string),len(compare_string))
+
+print('Prepare to be CORRECTED')
 
 for i in range(0,min_length):
 	# Compare the compare_string to see if it matches the test_string
 	if re.match(re.compile(test_string[i]), compare_string[i]):
 		#print('Match')
-		print(test_string[i])
+		print(test_string[i], end='')
 	else:
 		#print('No Match')
 		temp_test_word = re.findall('\w+[\'-]?\w+',test_string[i])
@@ -63,13 +73,31 @@ for i in range(0,min_length):
 		#print(temp_compare_word)
 		temp_min_length = min(len(temp_test_word),len(temp_compare_word))
 
+		# TODO the min length restricts the output to the length of the guess.
+		# This needs to work so that if the guesser didn't guess enough words
+		# in that phrase it continues to 'not match' the words.
+		#
+		# The problem is, bad attempts will not match the same number of phrases
+		# probably not even close. The questions to ask is, what would a 
+		# human do to tell you it was wrong?
+		# - Tell the person it's wrong, and not continue reviewing
+		# - check for similar words?
+		#
+		# Do I need to use a different method for mis-phrased attempts?
 		for j in range(0,temp_min_length):
 			if re.match(re.compile(temp_test_word[j]), temp_compare_word[j]):
 				#print('\tMatch word')
-				print(temp_test_word[j])
+				print(temp_test_word[j], end='')
 			else:
 				#print('\tNot Match word')
-				print("**" + temp_test_word[j] + "**")
+				print("**" + temp_test_word[j] + "**<" + temp_compare_word[j] + ">" , end='')
+			# put a space at the end of the word, but not before [.,;:]
+			if j != temp_min_length-1: print(' ', end='')
+	print(test_string_punc[i], end=' ')
+
+
+# just a print to get the next line.
+print()
 
 
 # Next, to get each phrase to check it's word content. But only if it's a 
