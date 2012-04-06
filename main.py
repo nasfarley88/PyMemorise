@@ -1,18 +1,23 @@
 #!/usr/bin/python3.2
 import re
 
+#TODO: known bugs
+# - allowed punctuation does not spark wrong word at the beggining of the word.
+#   i.e. 'word will match word but not w'ord will not match word.
+
 """Very simply compare the given string to a second given string."""
 
-def check_string(test_string,compare_string):
+def check_string(test_string,compare_string,test_string_punc):
 	"""Check if the string is correct."""
 	# I'm thinking, we make this function, the one that checks the method we need to use.
 	min_length = min(len(test_string),len(compare_string))
 	for i in range(0,min_length):
 		# Compare the compare_string to see if it matches the test_string
 		if re.match(re.compile(test_string[i]), compare_string[i]):
-			#print('Match')
+			#if matches, print the test string equivalent
 			print(test_string[i], end='')
 		else:
+			#else, check each word.
 			#print('No Match')
 			temp_test_word = re.findall('\w+[\'-]?\w+',test_string[i])
 			#print(temp_test_word)
@@ -33,19 +38,20 @@ def check_string(test_string,compare_string):
 			# Do I need to use a different method for mis-phrased attempts?
 			for j in range(0,temp_min_length):
 				if re.match(re.compile(temp_test_word[j]), temp_compare_word[j]):
-					#print('\tMatch word')
+					#if match, print test word.
 					print(temp_test_word[j], end='')
 				else:
-					#print('\tNot Match word')
+					#else, print **wrong word**<right word>
 					print("**" + temp_test_word[j] + "**<" + temp_compare_word[j] + ">" , end='')
 				# put a space at the end of the word, but not before [.,;:]
 				if j != temp_min_length-1: print(' ', end='')
+		print(test_string_punc[i], end=' ')
 	# TODO This is supposed to be the loop that prints the rest of the test string. 
 	# it's not working yet.
-	if min_length < len(temp_test_word): 
-		for j in range(min_length+1,len(temp_test_word)):
-			print(temp_test_word[j], end=' ')
-		print(test_string_punc[i], end=' ')
+#	if min_length < len(temp_test_word): 
+#		for j in range(min_length+1,len(temp_test_word)):
+#			print(temp_test_word[j], end=' ')
+#		print(test_string_punc[i], end=' ')
 	# end of not working bit.
 
 # Some intro stuff
@@ -67,20 +73,8 @@ test_string_punc = test_string # this will be formatted later
 #print(file_string)
 print(test_string)
 
-# Matches every word and leading/trailing punctuation
-#test_string = re.findall('[\w!?",\'.\(\)]+', file_string)
-
-# Matches every word and every relavant punctuation mark
-#test_string = re.findall('\w+|[!?",\'.\(\)]', file_string)
-
-# Matches only words.
-#test_string = re.findall('\w+', file_string)
-#print(test_string)
-
 # New plan: catalog phrases, not words. Let's match phrases
-#test_string = re.findall('(?<=[,.;:\(\)^]).*?(?=[,\.;:\(\)$])', test_string)
 test_string = re.findall('([\w\s\'-]+)[\W\s\'-]+', test_string)
-#test_string = re.findall('^.*;', test_string)
 print(test_string)
 
 # I need to extract the punctuation
@@ -103,7 +97,7 @@ print()
 # Time to show the user what's happened to their string
 #test_string_watchman = [0] * len(test_string)
 #compare_string_watchman = [0] * len(compare_string)
-check_string(test_string,compare_string)
+check_string(test_string,compare_string,test_string_punc)
 """
 min_length = min(len(test_string),len(compare_string))
 
