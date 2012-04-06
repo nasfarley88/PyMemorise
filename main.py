@@ -25,17 +25,6 @@ def check_string(test_string,compare_string,test_string_punc):
 			#print(temp_compare_word)
 			temp_min_length = min(len(temp_test_word),len(temp_compare_word))
 
-			# TODO the min length restricts the output to the length of the guess.
-			# This needs to work so that if the guesser didn't guess enough words
-			# in that phrase it continues to 'not match' the words.
-			#
-			# The problem is, bad attempts will not match the same number of phrases
-			# probably not even close. The questions to ask is, what would a 
-			# human do to tell you it was wrong?
-			# - Tell the person it's wrong, and not continue reviewing
-			# - check for similar words?
-			#
-			# Do I need to use a different method for mis-phrased attempts?
 			for j in range(0,temp_min_length):
 				if re.match(re.compile(temp_test_word[j]), temp_compare_word[j]):
 					#if match, print test word.
@@ -45,6 +34,13 @@ def check_string(test_string,compare_string,test_string_punc):
 					print("**" + temp_test_word[j] + "**<" + temp_compare_word[j] + ">" , end='')
 				# put a space at the end of the word, but not before [.,;:]
 				if j != temp_min_length-1: print(' ', end='')
+
+			# This part of the function should probably do the same for compare_string too.
+			# Loop for continuing temp_test_word
+			if min_length<len(temp_test_word):
+				for k in range(temp_min_length,len(temp_test_word)):
+					print("*" + temp_test_word[k], end=' ')
+
 		print(test_string_punc[i], end=' ')
 	# TODO This is supposed to be the loop that prints the rest of the test string. 
 	# it's not working yet.
