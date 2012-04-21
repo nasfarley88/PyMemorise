@@ -24,7 +24,7 @@ def check_string(test_string,compare_string,test_string_punc):
 			#else, check each word.
 			#print('No Match') temp_test_word = re.findall('\w+[\'-,]?\w*',test_string[i])
 			#print(temp_test_word)
-			temp_compare_word = re.findall('\w+[\'-,]?\w*',compare_string[i])
+			temp_compare_word = re.findall('\w+[\'-]?\w*',compare_string[i])
 			#print(temp_compare_word)
 			temp_min_length = min(len(temp_test_word),len(temp_compare_word))
 			temp_max_length = max(len(temp_test_word),len(temp_compare_word))
@@ -136,6 +136,19 @@ def check_string_2(test_string,compare_string,test_string_punc):
 					cprint(compare_string[j], 'red', end=' ')
 			break # break, because the user string has come to an end before i loop is ready to give up.
 
+def no_of_punc(x):
+	#TODO possible error when there is a newline in the quote (i.e. a '\n')
+	y = "no_of_punc didn't work."
+	#y = re.findall('([\w\s\'-,]+)[\W\s\'-]+', x)
+	y = re.findall('[\w\s\-\']+', x)
+	z = [0]*(len(y))
+	for i in range(0,len(y)-1):
+		y[i] = re.findall('\w+', y[i])
+		z[i] = len(y[i])
+	print("y =",y)
+	print("z =",z)
+	return z
+
 
 
 # Some intro stuff
@@ -153,6 +166,7 @@ file = open('temp_test.pym', 'r')
 
 #file_string = file.read()
 test_string = file.read()
+test_string_unchanging = test_string # remove this variable later, restructure the programe to have only one unchangeable variable
 test_string_punc = test_string # this will be formatted later
 #print(file_string)
 print(test_string)
@@ -163,7 +177,7 @@ test_string = re.findall('([\w\'-,]+)[\W\'-]+', test_string)
 print(test_string)
 
 # I need to extract the punctuation
-test_string_punc = re.findall('[.;:]', test_string_punc)
+test_string_punc = re.findall('[,.;:]', test_string_punc)
 print(test_string_punc)
 
 print('\n\n###Time for comparison###\n\n')
@@ -187,6 +201,10 @@ print()
 # TODO this will be reinstaed when I have done the BibleMemoriser technique
 #check_string(test_string,compare_string,test_string_punc)
 check_string_2(test_string,compare_string,test_string_punc)
+
+no_of_punc(test_string_unchanging)
+
+
 
 # just a print to get the next line.
 print()
