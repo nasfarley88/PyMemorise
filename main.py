@@ -22,8 +22,7 @@ def check_string(test_string,compare_string,test_string_punc):
 			cprint(test_string[i], 'yellow', end='')
 		else:
 			#else, check each word.
-			#print('No Match')
-			temp_test_word = re.findall('\w+[\'-,]?\w*',test_string[i])
+			#print('No Match') temp_test_word = re.findall('\w+[\'-,]?\w*',test_string[i])
 			#print(temp_test_word)
 			temp_compare_word = re.findall('\w+[\'-,]?\w*',compare_string[i])
 			#print(temp_compare_word)
@@ -60,13 +59,84 @@ def check_string(test_string,compare_string,test_string_punc):
 						print(' ', end='')
 
 		cprint(test_string_punc[i], 'yellow', end=' ')
-	# TODO This is supposed to be the loop that prints the rest of the test string. 
-	# it's not working yet.
-#	if min_length < len(temp_test_word): 
-#		for j in range(min_length+1,len(temp_test_word)):
-#			print(temp_test_word[j], end=' ')
-#		print(test_string_punc[i], end=' ')
-	# end of not working bit.
+
+
+def check_string_2(test_string,compare_string,test_string_punc):
+	"""Check if the string is correct -- BibleMemorizer technique."""
+	# I'm thinking, we make this function, the one that checks the method we need to use.
+	min_length = min(len(test_string),len(compare_string))
+	i_user_offset = 0
+	wrong_counter = 0
+	i_real_offset = 0
+	for i_real in range(0,min_length):
+		match_is_true = False
+		i = i_real + i_real_offset
+		print()
+		print('i loop entered, where i =', i, 'i_user_offset =', i_user_offset, "i_real_offset =", i_real_offset)
+		# Compare the compare_string to see if it matches the test_string and vice versa
+		print('I want to compare', test_string[i], 'and', compare_string[i+i_user_offset])
+		if re.match(re.compile(test_string[i]), compare_string[i+i_user_offset]) \
+				and re.match(re.compile(compare_string[i+i_user_offset]), test_string[i]):
+			print()
+			print("MATCH")
+			# Print any missing words
+			if wrong_counter > 0:
+				for j in range (i-wrong_counter,i):
+					cprint(test_string[j], 'blue', end='')
+				
+				# Reset the counter, it's done it's job
+				wrong_counter = 0
+			#if matches, print the test string equivalent (saying it's good.)
+			cprint(test_string[i], 'yellow', end='')
+		else:
+			for j in range(i,min_length):
+				#print()
+				print('j loop entered, j =', j, ' i =', i)
+				if re.match(re.compile(test_string[j]), compare_string[i+i_user_offset]) \
+						and re.match(re.compile(compare_string[i+i_user_offset]), test_string[j]):
+					for k in range(i,j):
+						#print()
+						print('k loop entered, k =', k, ' j =', j, ' i =', i)
+						# Print the words in between, and the one's counted by wrong_counter
+						cprint(test_string[k], 'blue', end='')
+						# Because it's output them now.
+						wrong_counter = 0
+					#i_user_offset = i_user_offset + i_real + i_real_offset - j
+					i_user_offset = i_user_offset + i - j
+					print('i_user_offset =', i_user_offset)
+					#i_real_offset = j - i_real
+					i_real_offset = i_real_offset + j - i
+					print('i_real_offset =', i_real_offset)
+					#print('Before the change j =', j, 'and i =', i)
+					# Act as if it is the right one.
+					cprint(test_string[i_real+i_real_offset], 'yellow', end='')
+					#print()
+					print('Changed j to', j, 'i to', i, 'i_user_offset to', i_user_offset)
+					match_is_true = True
+					break # break the loop, we've found what we're looking for.
+
+			if match_is_true == False:
+				cprint(compare_string[i+i_user_offset], 'red', end='')
+				print('I couldn\'t find the word you\'re looking for...')
+				i_real_offset = i_real_offset - 1
+				i_user_offset = i_user_offset + 1
+				# Can't find a word? Count how many here.
+				#wrong_counter = wrong_counter + 1
+
+
+		if i + i_user_offset > min_length or i + i_real_offset > min_length:
+			print("OH MY GOSH IT'S ALL GOING TO--")
+			print('len(test_string) =', len(test_string), "i+i_user_offset =", i+i_user_offset)
+			print('len(compare_string) =', len(compare_string), 'i+i_real_offset =', i+i_real_offset)
+			if i + i_user_offset >= len(test_string):
+				for j in range(i + i_real_offset, len(test_string)):
+					cprint(test_string[j], 'blue', end=' ')
+			if i + i_real_offset > len(compare_string):
+				for j in range(i + i_real_offset+1, len(compare_string)):
+					cprint(compare_string[j], 'red', end=' ')
+			break # break, because the user string has come to an end before i loop is ready to give up.
+
+
 
 # Some intro stuff
 cprint('################################################################################', 'red')
@@ -88,7 +158,8 @@ test_string_punc = test_string # this will be formatted later
 print(test_string)
 
 # New plan: catalog phrases, not words. Let's match phrases
-test_string = re.findall('([\w\s\'-,]+)[\W\s\'-]+', test_string)
+#test_string = re.findall('([\w\s\'-,]+)[\W\s\'-]+', test_string)
+test_string = re.findall('([\w\'-,]+)[\W\'-]+', test_string)
 print(test_string)
 
 # I need to extract the punctuation
@@ -101,9 +172,11 @@ print('\n\n###Time for comparison###\n\n')
 file_compare = open('temp_compare.pym', 'r')
 compare_string = file_compare.read()
 
-compare_string = re.findall('([\w\s\'-,]+)[\W\s\'-]+', compare_string)
+#compare_string = re.findall('([\w\s\'-,]+)[\W\s\'-]+', compare_string)
+compare_string = re.findall('([\w\'-,]+)[\W\'-]+', compare_string)
 print(compare_string)
 print()
+
 
 
 ################### everyting after this needs to be functioned out. ###############
@@ -111,7 +184,9 @@ print()
 # Time to show the user what's happened to their string
 #test_string_watchman = [0] * len(test_string)
 #compare_string_watchman = [0] * len(compare_string)
-check_string(test_string,compare_string,test_string_punc)
+# TODO this will be reinstaed when I have done the BibleMemoriser technique
+#check_string(test_string,compare_string,test_string_punc)
+check_string_2(test_string,compare_string,test_string_punc)
 
 # just a print to get the next line.
 print()
