@@ -22,7 +22,8 @@ def check_string(test_string,compare_string,test_string_punc):
 		if re.match(re.compile(test_string[i]), compare_string[i]) \
 				and re.match(re.compile(compare_string[i]), test_string[i]):
 			#if matches, print the test string equivalent
-			cprint(test_string[i], 'yellow', end='')
+			#cprint(test_string[i], 'yellow', end='')
+			printsp(test_string[i], 'yellow')
 		else:
 			#else, check each word.
 			#print('No Match') temp_test_word = re.findall('\w+[\'-,]?\w*',test_string[i])
@@ -35,11 +36,14 @@ def check_string(test_string,compare_string,test_string_punc):
 			for j in range(0,temp_min_length):
 				if re.match(re.compile(temp_test_word[j]), temp_compare_word[j]):
 					#if match, print test word.
-					cprint(temp_test_word[j], 'yellow', end='')
+					#cprint(temp_test_word[j], 'yellow', end='')
+					printsp(temp_test_word[j], 'yellow')
 				else:
 					#else, print **wrong word**<right word>
-					cprint(temp_compare_word[j], 'red', end='')
-					cprint("[" + temp_test_word[j] + "]", 'blue', end='')
+					#cprint(temp_compare_word[j], 'red', end='')
+					printsp(temp_compare_word[j], 'red')
+					#cprint("[" + temp_test_word[j] + "]", 'blue', end='')
+					printsp("[" + temp_test_word[j] + "]", 'blue')
 				# put a space at the end of the word, but not before [.,;:]
 				if j != temp_max_length-1: print(' ', end='')
 
@@ -63,7 +67,15 @@ def check_string(test_string,compare_string,test_string_punc):
 
 		cprint(test_string_punc[i], 'yellow', end=' ')
 
-# Redesign this function with the string splitting happening inside.
+def printsp(x,color):
+	"""Print a string with a preceding space if not a punctuation character"""
+	if re.match('[.,;:]', x): 
+		cprint(x, color, end='')
+	else:
+		print(end=' ')
+		cprint(x, color, end='')
+
+
 def check_string_2(test_string,compare_string):
 	"""Check if the string is correct -- BibleMemorizer technique."""
 
@@ -72,15 +84,15 @@ def check_string_2(test_string,compare_string):
 	compare_string = re.findall('\w+|[,.;:]', compare_string)
 	
 	# Some debug output
-	print('The test_string is: ', test_string)
-	print('The compare_string is:', compare_string)
+	print('The test_string is: ', test_string, '\n')
+	print('The compare_string is:', compare_string, '\n')
 
-	# I'm thinking, we make this function, the one that checks the method we need to use.
+	# find the minimum length, for the loop to iterate over.
 	min_length = min(len(test_string),len(compare_string))
 
 	# Various variable to change which strings are compared.
 	i_user_offset = 0
-	wrong_counter = 0
+	missing_counter = 0
 	i_real_offset = 0
 
 	# This loop goes across the string lists until one runs out.
@@ -89,54 +101,72 @@ def check_string_2(test_string,compare_string):
 		# match_is_true allows the loop to know if a match has happened.
 		match_is_true = False
 
-		# TODO I'm not sure what this is...
-		i = i_real + i_real_offset
+		# variable to control the 'real' or test string.
+		ir = i_real + i_real_offset
 		
-		# if the current string matches... something? I'm not clear on what these i's do.
-		if re.match(re.compile(test_string[i]), compare_string[i+i_user_offset]) \
-				and re.match(re.compile(compare_string[i+i_user_offset]), test_string[i]):
-
-			# If there are wrong words from something before, print them before printing the match.
-			if wrong_counter > 0:
-				for j in range (i-wrong_counter,i):
-					cprint(test_string[j], 'blue', end='')
+		# variable to control the 'user' or compare string
+		iu = i_real + i_user_offset
+		
+		# TODO here the re.compile matches '.' as DOTALL. Hrmf
+		if re.match(re.compile(test_string[ir]), compare_string[iu]) \
+				and re.match(re.compile(compare_string[iu]), test_string[ir]):
+			
+			# If there are missing words from something before, print them before printing the match.
+			if missing_counter > 0:
+				for j in range (ir-missing_counter,ir):
+					#cprint(test_string[j], 'blue', end='')
+					printsp(test_string[j], 'blue')
 				
 				# Reset the counter, it's done it's job
-				wrong_counter = 0
+				missing_counter = 0
 			# Print the match.
-			cprint(test_string[i], 'yellow', end='')
+			#cprint(test_string[ir], 'yellow', end='')
+			printsp(test_string[ir], 'yellow')
 		else:
+			print('or maybe...')
 			# If it doesn't match, then loop over the rest of the compare_string 
-			for j in range(i,min_length):
-				if re.match(re.compile(test_string[j]), compare_string[i+i_user_offset]) \
-						and re.match(re.compile(compare_string[i+i_user_offset]), test_string[j]):
+			for j in range(ir,min_length):
+				if re.match(re.compile(test_string[j]), compare_string[iu]) \
+						and re.match(re.compile(compare_string[iu]), test_string[j]):
 					# If it matches, print the missing words (in blue), reset the wroung_counter and change... variables?!
-					for k in range(i,j):
-						# Print the words in between, and the one's counted by wrong_counter
-						cprint(test_string[k], 'blue', end='')
+					for k in range(ir,j):
+						print('this one')
+						# Print the words in between, and the one's counted by missing_counter
+						#cprint(test_string[k], 'blue', end='')
+						printsp(test_string[k], 'blue')
 						# Because it's output them now.
-						wrong_counter = 0
-					# TODO ISSUES HERE. What are these variables, and how do they work so well?
-					i_user_offset = i_user_offset + i - j
-					i_real_offset = i_real_offset + j - i
+						missing_counter = 0
+					
+					# Setting the offsets to reflect the new values.
+					i_user_offset = i_user_offset + i_real - j
+					i_real_offset = i_real_offset + j - i_real
+
+					# A change in i_user_offset and i_real_offset implies that...
+					ir = i_real + i_real_offset
+					iu = i_real + i_user_offset
+					# should be reset
+
 					# Act as if it is the right one.
-					cprint(test_string[i_real+i_real_offset], 'yellow', end='')
+					#cprint(test_string[ir], 'yellow', end='')
+					printsp(test_string[ir], 'yellow')
+					print('matched with' + compare_string[iu])
 					match_is_true = True
 					break # break the loop, we've found what we're looking for.
 				
-			# If the previous for loop didn't find anything then print the word as wrong... and again TODO VARIABLES?!
+			# If the previous for loop didn't find anything then print the word as wrong
 			if match_is_true == False:
-				cprint(compare_string[i+i_user_offset], 'red', end='')
+				#cprint(compare_string[i_real+i_user_offset], 'red', end='')
+				printsp(compare_string[i_real+i_user_offset], 'red')
 
-				# TODO These variables, what are they here for?! Same one 
+				# This makes sure the test string does not move on (it hasn't been found yet).
 				i_real_offset = i_real_offset - 1
-				i_user_offset = i_user_offset + 1
-				# Can't find a word? Count how many here.
-				#wrong_counter = wrong_counter + 1
+
+				# And, just so I don't forget to set this later
+				ir = i_real + i_real_offset
 
 		# This if is supposed to print the rest of the string in the event it's not already printed by the end of the testing.
 		# In order to fix this, I *need* to understand how my variables work. I'll draw a diagram tomorrow. (Sunday 27th May)
-		if i + i_user_offset > min_length or i + i_real_offset > min_length:
+		"""if i + i_user_offset > min_length or i + i_real_offset > min_length:
 			print("OH MY GOSH IT'S ALL GOING TO--")
 			print('len(test_string) =', len(test_string), "i+i_user_offset =", i+i_user_offset)
 			print('len(compare_string) =', len(compare_string), 'i+i_real_offset =', i+i_real_offset)
@@ -148,7 +178,7 @@ def check_string_2(test_string,compare_string):
 					cprint(compare_string[j], 'red', end=' ')
 			# TODO I'm unclear as to why this break is here. But it does 'fix' stuff.
 			# Maybe rewrite the if loop, with a proper understanding of the variables.
-			break # break, because the user string has come to an end before i loop is ready to give up.
+			break # break, because the user string has come to an end before i loop is ready to give up. """
 
 def no_of_punc(x):
 	""" I may not need this function anymore... using different methods for punctuation."""
